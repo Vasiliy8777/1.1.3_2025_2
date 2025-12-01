@@ -28,20 +28,42 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void createUsersTable() {
+        Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
-            Transaction tx = session.beginTransaction();
+            transaction = session.beginTransaction();
             session.createNativeQuery(CREATE_USERS_TABLE).executeUpdate();
-            tx.commit();
+            transaction.commit();
+        } catch (Exception e) {
+
+            if (transaction != null && transaction.getStatus().canRollback()) {
+                try {
+                    transaction.rollback();
+                } catch (Exception ex) {
+                    System.out.println("Rollback failed: " + ex.getMessage());
+                }
+            }
+            e.printStackTrace();
         }
 
     }
 
     @Override
     public void dropUsersTable() {
+        Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
-            Transaction tx = session.beginTransaction();
+            transaction = session.beginTransaction();
             session.createNativeQuery(DROP_USERS_TABLE).executeUpdate();
-            tx.commit();
+            transaction.commit();
+        } catch (Exception e) {
+
+            if (transaction != null && transaction.getStatus().canRollback()) {
+                try {
+                    transaction.rollback();
+                } catch (Exception ex) {
+                    System.out.println("Rollback failed: " + ex.getMessage());
+                }
+            }
+            e.printStackTrace();
         }
     }
 
